@@ -48,17 +48,6 @@ def load_ply(file_path):
 
     return points, colors
 
-# call function
-points, colors = load_ply(INPUT_DIR / "image1.ply")
-
-# check
-print("Points shape:", points.shape)
-print("Colors shape:", colors.shape)
-print("First 5 points:")
-print(points[:5])
-print("First 5 colors:")
-print(colors[:5])
-
 
 # transforms points according to given permutation and signs
 def transform_points(points, permutation, signs):
@@ -125,12 +114,20 @@ def save_ply(input_file_path, output_file_path, points, colors):
 permutation = [2, 1, 0]
 signs = [1, 1, -1]
 
-transformed_points = transform_points(points, permutation, signs)
 transformed_matrices = transform_poses(matrices, permutation, signs)
 save_traj(OUTPUT_DIR / "traj.txt", transformed_matrices)
-save_ply(
-    INPUT_DIR / "image1.ply",
-    OUTPUT_DIR / "image1.ply",
-    transformed_points,
-    colors
-)
+
+ply_files = ["image1.ply", "image2.ply", "image3.ply"]
+
+for image_file in ply_files:
+    points, colors = load_ply(INPUT_DIR / image_file)
+
+    transformed_points = transform_points(points, permutation, signs)
+
+    print(f"Saving transformed {image_file}")
+    save_ply(
+        INPUT_DIR / image_file,
+        OUTPUT_DIR / image_file,
+        transformed_points,
+        colors
+    )
