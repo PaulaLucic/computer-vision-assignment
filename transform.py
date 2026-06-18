@@ -1,11 +1,12 @@
 from pathlib import Path
 import numpy as np
 
-# path to folder
+# Paths to folders
 INPUT_DIR = Path("input")
 OUTPUT_DIR = Path("output")
+OUTPUT_DIR.mkdir(exist_ok=True)
 
-# load, reshape
+# Load and reshape trajectory data
 def load_traj(file_path):
 
     data = np.loadtxt(file_path)
@@ -14,15 +15,11 @@ def load_traj(file_path):
 
     return matrices
 
-# call function
+# Call function
 matrices = load_traj(INPUT_DIR / "traj.txt")
-positions = matrices[:, :3, 3]
 
-# check
-print("Camera positions:")
-print(positions)
 
-# load points (as float) and colors, without header
+# Load points (float) and colors, skipping the header
 def load_ply(file_path):
     print("Loading file:", file_path)
 
@@ -49,14 +46,14 @@ def load_ply(file_path):
     return points, colors
 
 
-# transforms points according to given permutation and signs
+# Transform points according to the given permutation and signs
 def transform_points(points, permutation, signs):
     transformed_points = points[:, permutation]
     transformed_points = transformed_points * signs
     return transformed_points
 
 
-#converts permutation + signs to one 3 x 3 matrix
+# Convert permutation and signs into a 3x3 transformation matrix.
 def build_axis_transform(permutation, signs):
     axis_transform = np.zeros((3, 3))
 
@@ -66,7 +63,7 @@ def build_axis_transform(permutation, signs):
     return axis_transform
 
 
-# transforms cameras position and rotation according to given permutation and signs
+# Transform camera position and rotation according to the given permutation and signs
 def transform_poses(poses, permutation, signs):
     axis_transform = build_axis_transform(permutation, signs)
 
@@ -83,12 +80,12 @@ def transform_poses(poses, permutation, signs):
 
     return transformed_poses
 
-# creates new file with transformed camera poses
+# Create new file with transformed camera poses
 def save_traj(file_path, poses):
     flat_poses = poses.reshape(3, 16)
     np.savetxt(file_path, flat_poses)
 
-# creates new file with transformed points
+# Create new file with transformed points
 def save_ply(input_file_path, output_file_path, points, colors):
 
     header = []
@@ -110,7 +107,7 @@ def save_ply(input_file_path, output_file_path, points, colors):
             f.write(f"{x} {y} {z} {r} {g} {b}\n")
 
 
-# call function
+# Call function
 permutation = [2, 1, 0]
 signs = [1, 1, -1]
 
