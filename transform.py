@@ -72,11 +72,11 @@ def transform_poses(poses, permutation, signs):
     for i in range(len(poses)):
         transformed_poses[i, :3, :3] = (
             axis_transform @ poses[i, :3, :3] @ axis_transform.T
-        ) # transform camera rotation
+        )
 
         transformed_poses[i, :3, 3] = (
             axis_transform @ poses[i, :3, 3]
-        ) # transform camera position
+        )
 
     return transformed_poses
 
